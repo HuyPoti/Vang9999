@@ -15,11 +15,12 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
+RUN npm ci --only=production
 
 ENV NODE_OPTIONS="--dns-result-order=ipv4first"
+ENV NODE_ENV=production
 
-EXPOSE 3000
+EXPOSE 3001
 
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main"]
