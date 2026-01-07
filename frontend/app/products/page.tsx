@@ -48,7 +48,7 @@ export default function ProductsPage() {
         <div className="py-12 bg-gray-50 min-h-screen">
             <Container>
                 <div className="mb-12 text-center">
-                    <h1 className="font-display font-bold text-4xl text-gray-900 mb-4">Bộ Sưu Tập 2025</h1>
+                    <h1 className="font-display font-bold text-4xl text-gray-900 mb-4">Bộ Sưu Tập 2026</h1>
                     <p className="text-gray-500 max-w-2xl mx-auto">
                         Tổng hợp các mẫu bao lì xì được thiết kế tỉ mỉ, ép kim sang trọng, mang lại may mắn và tài lộc cho năm mới.
                     </p>

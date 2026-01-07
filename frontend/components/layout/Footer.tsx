@@ -10,7 +10,7 @@ export const Footer = () => {
             <Container>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
-                        <h3 className="font-display font-bold text-2xl text-white mb-4">Lì Xì 2025</h3>
+                        <h3 className="font-display font-bold text-2xl text-white mb-4">Lì Xì 2026</h3>
                         <p className="text-sm leading-relaxed max-w-xs text-gray-400">
                             Mang những phong bao lì xì đẹp nhất, ý nghĩa nhất đến gia đình bạn trong dịp Tết này. Trao gửi yêu thương, kết nối sum vầy.
                         </p>

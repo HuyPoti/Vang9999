@@ -1,51 +1,63 @@
-# 🧧 Project Lì Xì 2026
+# 🧧 Project Lì Xì 2026 - Monorepo
 
-Website bán bao lì xì hiệu năng cao, tối ưu chi phí deploy (Free Tier).
+Hệ thống E-commerce bán bao lì xì cao cấp, tích hợp quản lý đơn hàng, kho vận và hệ thống bình luận. Dự án được thiết kế theo mô hình Monorepo hiện đại, tối ưu cho việc phát triển và triển khai nhanh.
+
+## 🚀 Tính năng nổi bật
+
+### 🛒 Dành cho Khách hàng
+- **Trang chủ & Sản phẩm:** Hiển thị mượt mà với hiệu ứng premium, hỗ trợ SEO.
+- **Giỏ hàng:** Quản lý giỏ hàng linh hoạt bằng LocalStorage.
+- **Thanh toán:** Quy trình đặt hàng đơn giản, có thông báo qua Email ngay lập tức.
+- **Bình luận:** Gửi cảm nhận và xem đánh giá của người dùng khác một cách trực quan.
+
+### 🛡️ Dành cho Quản trị viên (Admin Dashboard)
+- **Quản lý Đơn hàng:** 
+  - Theo dõi trạng thái tuần tự: Chờ xử lý -> Đã xác nhận -> Đang giao -> Hoàn thành.
+  - Tìm kiếm nâng cao (Tên, SĐT, Email).
+  - Xuất báo cáo Excel chuyên nghiệp.
+- **Quản lý Sản phẩm:**
+  - Thêm, sửa thông tin và bật/tắt trạng thái kinh doanh.
+  - Tích hợp Cloudinary để tối ưu hóa hình ảnh.
+- **Quản lý Bình luận:** Kiểm duyệt ẩn/hiện bình luận của khách hàng.
 
 ## 🛠 Tech Stack
 
-### Frontend
-- **Framework:** Next.js 14+ (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS (Premium UI)
-- **State:** React Hooks + LocalStorage (Cart)
-- **Deploy:** Vercel
-- **Performance:** SSG + ISR (Revalidate 86400s)
+- **Frontend:** Next.js 15+ (App Router), Tailwind CSS, Lucide Icons, React Hot Toast.
+- **Backend:** NestJS, TypeORM, PostgreSQL (via Supabase).
+- **Tiện ích:** ExcelJS (Xuất Excel), Cloudinary (Lưu trữ ảnh), Nodemailer (Email).
+- **Quản lý source:** Git Monorepo.
 
-### Backend
-- **Framework:** NestJS
-- **Language:** TypeScript
-- **Database:** PostgreSQL (via Supabase)
-- **ORM:** TypeORM
-- **Container:** Docker (Multi-stage)
-- **Deploy:** Render
+## 📁 Cấu trúc thư mục
 
-## 📂 Architecture & Features
+```text
+/
+├── backend/          # NestJS API Server
+├── frontend/         # Next.js Web App
+├── DEPLOYMENT.md     # Hướng dẫn triển khai chi tiết
+└── .gitignore        # Giữ repo sạch sẽ
+```
 
-### 1. Sản phẩm (Product)
-- **List:** Static Generation (SSG) + ISR.
-- **Detail:** SSG + ISR.
-- **Cache:** TTL 1 ngày.
+## 🛠 Hướng dẫn phát triển (Local)
 
-### 2. Bình luận (Comment)
-- **Strategy:** Client-side fetching.
-- **Auth:** Anonymous (Guest).
-- **Rate Limit:** Basic token bucket or IP based (Backend).
+### 1. Backend
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+Cần cấu hình file `.env` (Tham khảo `DEPLOYMENT.md`).
 
-### 3. Đơn hàng (Order)
-- **Flow:** Add to Cart (Local) -> Checkout Form -> API `POST /orders`.
-- **Logic:** Validate serverside -> Save DB.
+### 2. Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Cần cấu hình file `.env` (Tham khảo `DEPLOYMENT.md`).
 
-## 🚀 Getting Started
+## ✍️ Tác giả
+- Kỹ sư phát triển: **Antigravity AI Assistant**
+- Năm phát triển: 2026
 
-### Prerequisites
-- Node.js >= 18
-- Docker Desktop
-- Supabase Account (Connection String)
-
-### Setup
-1. **Frontend:** `cd frontend && npm install && npm run dev`
-2. **Backend:** `cd backend && npm install && npm run start:dev`
-
-## 📝 Environment Variables
-See `.env.example` in each folder.
+## 📜 Giấy phép
+Dự án được phát triển riêng cho mục đích kinh doanh Lì Xì 2026.
