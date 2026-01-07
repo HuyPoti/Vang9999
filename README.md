@@ -56,7 +56,7 @@ npm run dev
 Cần cấu hình file `.env` (Tham khảo `DEPLOYMENT.md`).
 
 ## ✍️ Tác giả
-- Kỹ sư phát triển: **Antigravity AI Assistant**
+- Kỹ sư phát triển: Gia Huy, Đức Anh
 - Năm phát triển: 2026
 
 ## 📜 Giấy phép
