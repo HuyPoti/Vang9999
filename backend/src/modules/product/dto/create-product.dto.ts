@@ -1,4 +1,12 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, IsEnum } from 'class-validator';
+
+// Temporary: Define enum here to avoid import issues
+// TODO: Refactor to import from shared location once TypeScript resolves module
+export enum StockStatus {
+    IN_STOCK = 'in_stock',
+    OUT_OF_STOCK = 'out_of_stock',
+    DISCONTINUED = 'discontinued'
+}
 
 export class CreateProductDto {
     @IsString()
@@ -39,4 +47,9 @@ export class CreateProductDto {
 
     @IsOptional()
     is_active?: boolean;
+
+    @IsEnum(StockStatus)
+    @IsOptional()
+    stock_status?: StockStatus;
 }
+

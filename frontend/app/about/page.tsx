@@ -22,17 +22,17 @@ interface ProductStory {
 }
 
 const MEMBERS: Member[] = [
-    { id: 1, name: "Nguyễn Văn A", role: "Co-Founder & CEO", image: "/NguyenGiaHuy.jpg" },
-    { id: 2, name: "Trần Thị B", role: "Creative Director", image: "/NguyenGiaHuy.jpg" },
-    { id: 3, name: "Lê Văn C", role: "Production Manager", image: "/NguyenGiaHuy.jpg" },
-    { id: 4, name: "Phạm Thị D", role: "Marketing Lead", image: "/NguyenGiaHuy.jpg" },
-    { id: 5, name: "Hoàng Văn E", role: "Finance Officer", image: "/NguyenGiaHuy.jpg" },
-    { id: 6, name: "Ngô Thị F", role: "UX/UI Designer", image: "/NguyenGiaHuy.jpg" },
-    { id: 7, name: "Đỗ Văn G", role: "Lead Developer", image: "/NguyenGiaHuy.jpg" },
-    { id: 8, name: "Bùi Thị H", role: "Customer Success", image: "/NguyenGiaHuy.jpg" },
-    { id: 9, name: "Lý Văn I", role: "Logistics Manager", image: "/NguyenGiaHuy.jpg" },
-    { id: 10, name: "Vũ Thị K", role: "Graphic Artist", image: "/NguyenGiaHuy.jpg" },
-    { id: 11, name: "Phan Văn L", role: "Quality Control", image: "/NguyenGiaHuy.jpg" },
+    { id: 1, name: "Mai Thị Hồng Ngọc", role: "Leader", image: "/MaiNgoc.png" },
+    { id: 2, name: "Nguyễn Thị Ngọc Mỹ", role: "Member", image: "/NgocMy.png" },
+    { id: 3, name: "Phan Kiều Anh Thư", role: "Member", image: "/AnhThu.png" },
+    { id: 4, name: "Hà Hồng Thắm", role: "Member", image: "/HongTham.png" },
+    { id: 5, name: "Đào Phan Khánh An", role: "Member", image: "/KhanhAn.png" },
+    { id: 6, name: "Nguyễn Thị Dung", role: "Member", image: "/DungNguyen.png" },
+    { id: 7, name: "Trương Thị Thu Thảo", role: "Member", image: "/ThuThao.png" },
+    { id: 8, name: "Trương Thị Quỳnh Nga", role: "Member", image: "/QuynhNga.png" },
+    { id: 9, name: "Trần Đức Anh", role: "Member", image: "/DucAnh.png" },
+    { id: 10, name: "Nguyễn Gia Huy", role: "Member", image: "/GiaHuy.jpg" },
+    { id: 11, name: "Kiều Thị Quỳnh Ly", role: "Member", image: "/LiLi.png" },
 ];
 
 export default function AboutPage() {

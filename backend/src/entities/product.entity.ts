@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { Comment } from './comment.entity'; // Will resolve at runtime if circular
 
 import { ColumnNumericTransformer } from '../utils/column-numeric-transformer';
+import { StockStatus } from '../modules/product/dto/create-product.dto';
 
 @Entity('products')
 export class Product {
@@ -30,6 +31,13 @@ export class Product {
 
     @Column({ default: true })
     is_active: boolean;
+
+    @Column({
+        type: 'enum',
+        enum: StockStatus,
+        default: StockStatus.IN_STOCK
+    })
+    stock_status: StockStatus;
 
     @Column('text', { nullable: true })
     story: string;

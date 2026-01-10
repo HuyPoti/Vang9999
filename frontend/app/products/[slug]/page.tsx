@@ -16,6 +16,7 @@ interface Product {
     price: number;
     description: string;
     images: string[];
+    stock_status?: 'in_stock' | 'out_of_stock' | 'discontinued';
     story?: string;
     story_title?: string;
     story_image?: string;
@@ -119,6 +120,21 @@ export default function ProductDetailPage({ params: paramsPromise }: { params: P
                     <div className="w-full md:w-1/2">
                         <div className="mb-2 text-gold-600 font-bold uppercase tracking-wider text-sm">Bộ Sưu Tập 2025</div>
                         <h1 className="font-display font-bold text-4xl text-gray-900 mb-4">{product.name}</h1>
+
+                        {/* Stock Status Badges */}
+                        <div className="flex gap-2 mb-4">
+                            {product.stock_status === 'out_of_stock' && (
+                                <span className="px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-sm font-bold uppercase">
+                                    Hết hàng
+                                </span>
+                            )}
+                            {product.stock_status === 'discontinued' && (
+                                <span className="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-bold uppercase">
+                                    Ngừng kinh doanh
+                                </span>
+                            )}
+                        </div>
+
                         <div className="text-3xl text-primary-600 font-bold mb-8">{formatCurrency(product.price)}</div>
 
                         <div className="prose prose-stone mb-10 text-gray-600 whitespace-pre-wrap">
@@ -154,13 +170,11 @@ export default function ProductDetailPage({ params: paramsPromise }: { params: P
                         )}
 
                         <div className="border-t border-gray-100 pt-8 mb-8">
-                            <AddToCartButton product={product as any} />
+                            <AddToCartButton product={product as any} stockStatus={product.stock_status} />
                         </div>
 
                         <div className="flex gap-4 text-sm text-gray-500">
-                            <span>Mã: {product.slug}</span>
-                            <span>•</span>
-                            <span>Danh mục: Bao Lì Xì Truyền Thống</span>
+                            <span>Đặt trên 50 cái sẽ giao hàng tận nơi. Đặt dưới 50 cái sẽ giao hàng tại Trường Đại học Sư phạm TP. Hồ Chí Minh.</span>
                         </div>
                     </div>
                 </div>
