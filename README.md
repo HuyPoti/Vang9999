@@ -1,4 +1,4 @@
-# 🧧 Project Lì Xì 2026 - Monorepo
+# 🧧 Project Lộc bếp Việt - Monorepo
 
 Hệ thống E-commerce bán bao lì xì cao cấp, tích hợp quản lý đơn hàng, kho vận và hệ thống bình luận. Dự án được thiết kế theo mô hình Monorepo hiện đại, tối ưu cho việc phát triển và triển khai nhanh.
 
@@ -60,4 +60,4 @@ Cần cấu hình file `.env` (Tham khảo `DEPLOYMENT.md`).
 - Năm phát triển: 2026
 
 ## 📜 Giấy phép
-Dự án được phát triển riêng cho mục đích kinh doanh Lì Xì 2026.
+Dự án được phát triển riêng cho mục đích kinh doanh Lộc bếp Việt.

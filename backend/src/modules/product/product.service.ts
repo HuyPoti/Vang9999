@@ -63,4 +63,54 @@ export class ProductService {
         const product = await this.findOne(id);
         return this.productRepository.remove(product);
     }
+
+    async getUniqueDetails() {
+        // Query to fetch specific fields from all products
+        const products = await this.productRepository.find({
+            select: ['images', 'story', 'story_title', 'story_image', 'stories']
+        });
+
+        // 1. Extract and flatten unique images
+        const allImages = products.flatMap(p => p.images || []);
+        const uniqueImages = Array.from(new Set(allImages)).filter(Boolean);
+
+        // 2. Extract unique stories
+        // We consider a story unique based on title + content
+        const storiesMap = new Map<string, { title: string, content: string, image: string }>();
+
+        products.forEach(p => {
+            // Legacy single story
+            if (p.story || p.story_title) {
+                const key = `${p.story_title || ''}|${p.story || ''}`;
+                if (!storiesMap.has(key)) {
+                    storiesMap.set(key, {
+                        title: p.story_title || '',
+                        content: p.story || '',
+                        image: p.story_image || ''
+                    });
+                }
+            }
+
+            // New multiple stories
+            if (p.stories && Array.isArray(p.stories)) {
+                p.stories.forEach(s => {
+                    const key = `${s.title || ''}|${s.content || ''}`;
+                    if (!storiesMap.has(key)) {
+                        storiesMap.set(key, {
+                            title: s.title || '',
+                            content: s.content || '',
+                            image: s.image || ''
+                        });
+                    }
+                });
+            }
+        });
+
+        const uniqueStories = Array.from(storiesMap.values());
+
+        return {
+            images: uniqueImages,
+            stories: uniqueStories
+        };
+    }
 }

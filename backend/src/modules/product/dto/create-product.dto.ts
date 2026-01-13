@@ -45,6 +45,10 @@ export class CreateProductDto {
     @IsOptional()
     story_image?: string;
 
+    @IsArray()
+    @IsOptional()
+    stories?: any[];
+
     @IsOptional()
     is_active?: boolean;
 

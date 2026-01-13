@@ -41,14 +41,16 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-r from-primary-900 to-primary-700">
+          <Image src="/tet2026new.png" alt="Logo" fill className="object-cover" />
           <div className="absolute top-10 left-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-gold-400/10 rounded-full blur-3xl" />
         </div>
 
         <Container className="relative z-10 text-center">
-          <h1 className="font-display font-bold text-5xl md:text-7xl text-white mb-6 animate-fade-in">
-            Tết Ấm Áp, <br />
-            <span className="text-gold-300">Trao Lộc Đầu Năm</span>
+
+          <h1 className="font-display font-bold text-5xl md:text-7xl text-white mb-6 animate-fade-in inline-block">
+            Lộc bếp Việt <br />
+            <span className="text-gold-300 block mt-4">Bao lì xì ẩm thực Việt</span>
           </h1>
           <p className="text-primary-100 text-lg md:text-xl max-w-2xl mx-auto mb-10 animate-slide-up opacity-90">
             Bộ sưu tập bao lì xì độc quyền 2026. Thiết kế tinh tế, chất liệu cao cấp, mang may mắn đến mọi nhà.

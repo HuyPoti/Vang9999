@@ -29,6 +29,11 @@ export class ProductController {
         });
     }
 
+    @Get('unique-details')
+    getUniqueDetails() {
+        return this.productService.getUniqueDetails();
+    }
+
     @Get(':slug')
     findOne(@Param('slug') slug: string) {
         // Check if slug is actually UUID
@@ -41,12 +46,14 @@ export class ProductController {
     @Post()
     @UseGuards(JwtAuthGuard)
     create(@Body() createProductDto: CreateProductDto) {
+        console.log('Creating Product Payload:', JSON.stringify(createProductDto, null, 2));
         return this.productService.create(createProductDto);
     }
 
     @Patch(':id')
     @UseGuards(JwtAuthGuard)
     update(@Param('id', ParseUUIDPipe) id: string, @Body() updateProductDto: UpdateProductDto) {
+        console.log('Updating Product Payload:', id, JSON.stringify(updateProductDto, null, 2));
         return this.productService.update(id, updateProductDto);
     }
 

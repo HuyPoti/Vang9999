@@ -13,7 +13,7 @@ export default function SuccessPage() {
 
                     <h1 className="font-display font-bold text-3xl text-gray-900 mb-4">Đặt Hàng Thành Công!</h1>
                     <p className="text-gray-600 mb-8 leading-relaxed">
-                        Cảm ơn bạn đã tin tưởng lựa chọn Lì Xì 2025. <br />
+                        Cảm ơn bạn đã tin tưởng lựa chọn Lì Xì 2026. <br />
                         Chúng tôi sẽ liên hệ với bạn sớm nhất để xác nhận đơn hàng.
                     </p>
 

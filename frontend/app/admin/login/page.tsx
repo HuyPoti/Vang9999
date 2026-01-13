@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
                             <Lock className="w-8 h-8" />
                         </div>
                         <h1 className="font-display font-bold text-2xl text-gray-900">Admin Login</h1>
-                        <p className="text-gray-500 text-sm mt-2">Truy cập hệ thống quản trị Lì Xì 2025</p>
+                        <p className="text-gray-500 text-sm mt-2">Truy cập hệ thống quản trị Lì Xì 2026</p>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-6">

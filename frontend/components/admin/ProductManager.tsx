@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Edit, Trash2, Upload, Loader2, X, Search, Eye, EyeOff } from "lucide-react";
+import { Plus, Edit, Trash2, Upload, Loader2, X, Search, Eye, EyeOff, BookOpen, ImagePlus, CheckCircle } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import Image from "next/image";
 import toast from 'react-hot-toast';
@@ -15,9 +15,11 @@ interface Product {
     images: string[];
     is_active: boolean;
     stock_status?: 'in_stock' | 'out_of_stock' | 'discontinued';
+    // Deprecated legacy fields
     story?: string;
     story_title?: string;
     story_image?: string;
+    stories?: { title: string; content: string; image: string }[];
 }
 
 export function ProductManager() {
@@ -37,10 +39,40 @@ export function ProductManager() {
         description: "",
         images: [] as string[],
         stock_status: "in_stock" as 'in_stock' | 'out_of_stock' | 'discontinued',
-        story: "",
-        story_title: "",
-        story_image: ""
+        stories: [] as { title: string; content: string; image: string }[]
     });
+
+    // Feature: Story Management
+    const [isStoryEditorOpen, setIsStoryEditorOpen] = useState(false);
+    const [tempStory, setTempStory] = useState({ title: "", content: "", image: "" });
+    const [selectedLibraryStories, setSelectedLibraryStories] = useState<{ title: string; content: string; image: string }[]>([]);
+
+    // Feature: Use existing content
+    const [availableDetails, setAvailableDetails] = useState<{
+        images: string[];
+        stories: { title: string; content: string; image: string }[];
+    }>({ images: [], stories: [] });
+
+    const [showStoryLibrary, setShowStoryLibrary] = useState(false);
+    const [showImageLibrary, setShowImageLibrary] = useState(false);
+    const [selectedLibraryImages, setSelectedLibraryImages] = useState<string[]>([]);
+
+    const fetchUniqueDetails = async () => {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+            const res = await fetch(`${apiUrl}/products/unique-details`);
+            const result = await res.json();
+            setAvailableDetails(result);
+        } catch (err) {
+            console.error("Failed to fetch unique details", err);
+        }
+    };
+
+    useEffect(() => {
+        if (isModalOpen) {
+            fetchUniqueDetails();
+        }
+    }, [isModalOpen]);
 
     const fetchProducts = useCallback(async () => {
         try {
@@ -128,7 +160,7 @@ export function ProductManager() {
                 toast.success(editingProduct ? "Cập nhật sản phẩm thành công" : "Thêm sản phẩm thành công");
                 setIsModalOpen(false);
                 setEditingProduct(null);
-                setFormData({ name: "", slug: "", price: 0, description: "", images: [], stock_status: "in_stock", story: "", story_title: "", story_image: "" });
+                setFormData({ name: "", slug: "", price: 0, description: "", images: [], stock_status: "in_stock", stories: [] });
                 fetchProducts();
             } else {
                 const error = await res.json();
@@ -280,9 +312,13 @@ export function ProductManager() {
             description: product.description || "",
             images: product.images || [],
             stock_status: product.stock_status || "in_stock",
-            story: product.story || "",
-            story_title: product.story_title || "",
-            story_image: product.story_image || ""
+            stories: product.stories && product.stories.length > 0 ? product.stories : (
+                (product.story || product.story_title) ? [{
+                    title: product.story_title || "",
+                    content: product.story || "",
+                    image: product.story_image || ""
+                }] : []
+            )
         });
         setIsModalOpen(true);
     };
@@ -314,7 +350,7 @@ export function ProductManager() {
                     <button
                         onClick={() => {
                             setEditingProduct(null);
-                            setFormData({ name: "", slug: "", price: 0, description: "", images: [], stock_status: "in_stock", story: "", story_title: "", story_image: "" });
+                            setFormData({ name: "", slug: "", price: 0, description: "", images: [], stock_status: "in_stock", stories: [] });
                             setIsModalOpen(true);
                         }}
                         className="flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-primary-700 transition-all shadow-sm"
@@ -466,39 +502,63 @@ export function ProductManager() {
                                 />
                             </div>
 
-                            <div className="space-y-1">
-                                <label className="text-sm font-medium text-gray-700">Tiêu đề câu chuyện (Story Title)</label>
-                                <input
-                                    type="text"
-                                    placeholder="Ví dụ: Sự tích Rồng Vàng may mắn"
-                                    className="w-full px-4 py-2 border rounded-xl"
-                                    value={formData.story_title}
-                                    onChange={(e) => setFormData({ ...formData, story_title: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="space-y-1">
-                                <label className="text-sm font-medium text-gray-700">Nội dung câu chuyện (Story Content)</label>
-                                <textarea
-                                    rows={5}
-                                    placeholder="Kể về ý nghĩa, nguồn cảm hứng thiết kế..."
-                                    className="w-full px-4 py-2 border rounded-xl resize-none"
-                                    value={formData.story}
-                                    onChange={(e) => setFormData({ ...formData, story: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="space-y-1">
-                                <label className="text-sm font-medium text-gray-700">Ảnh đại diện câu chuyện (URL)</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="text"
-                                        placeholder="Để trống để dùng ảnh sản phẩm đầu tiên"
-                                        className="flex-grow px-4 py-2 border rounded-xl"
-                                        value={formData.story_image}
-                                        onChange={(e) => setFormData({ ...formData, story_image: e.target.value })}
-                                    />
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <label className="text-sm font-medium text-gray-700">Câu chuyện sản phẩm ({formData.stories.length})</label>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setSelectedLibraryStories([]);
+                                                setShowStoryLibrary(true);
+                                            }}
+                                            className="text-xs flex items-center gap-1 text-primary-600 hover:text-primary-700 font-medium bg-primary-50 px-2 py-1 rounded-md"
+                                        >
+                                            <BookOpen className="w-3 h-3" />
+                                            Chọn mẫu có sẵn
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setTempStory({ title: "", content: "", image: "" });
+                                                setIsStoryEditorOpen(true);
+                                            }}
+                                            className="text-xs flex items-center gap-1 text-white bg-primary-600 hover:bg-primary-700 font-medium px-2 py-1 rounded-md"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Thêm mới
+                                        </button>
+                                    </div>
                                 </div>
+
+                                {formData.stories.length === 0 ? (
+                                    <div className="text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-sm text-gray-500">
+                                        Chưa có câu chuyện nào.
+                                    </div>
+                                ) : (
+                                    <div className="grid gap-3">
+                                        {formData.stories.map((s, idx) => (
+                                            <div key={idx} className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex gap-3 group relative">
+                                                {s.image && (
+                                                    <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0 relative">
+                                                        <Image src={s.image} alt="" fill className="object-cover" />
+                                                    </div>
+                                                )}
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="font-bold text-gray-900 text-sm truncate">{s.title || "Không có tiêu đề"}</h4>
+                                                    <p className="text-xs text-gray-500 line-clamp-1">{s.content}</p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData(p => ({ ...p, stories: p.stories.filter((_, i) => i !== idx) }))}
+                                                    className="absolute top-2 right-2 p-1 bg-white rounded-full text-red-500 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="space-y-2">
@@ -521,6 +581,17 @@ export function ProductManager() {
                                         <span className="text-[10px] font-bold uppercase">Upload</span>
                                         <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
                                     </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSelectedLibraryImages([]);
+                                            setShowImageLibrary(true);
+                                        }}
+                                        className="aspect-square rounded-lg border-2 border-dashed border-gray-200 hover:border-primary-500 hover:bg-primary-50 transition-all flex flex-col items-center justify-center text-gray-400"
+                                    >
+                                        <ImagePlus className="w-6 h-6 mb-1" />
+                                        <span className="text-[10px] font-bold uppercase text-center px-1">Chọn từ thư viện</span>
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -540,6 +611,212 @@ export function ProductManager() {
                             >
                                 {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                                 {editingProduct ? "Cập nhật" : "Tạo sản phẩm"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Story Library Modal */}
+            {showStoryLibrary && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                    <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[80vh]">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                            <h3 className="text-xl font-bold text-gray-900">Chọn câu chuyện ({selectedLibraryStories.length})</h3>
+                            <button onClick={() => setShowStoryLibrary(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                                <X className="w-6 h-6 text-gray-400" />
+                            </button>
+                        </div>
+                        <div className="p-6 overflow-y-auto custom-scrollbar space-y-4 flex-1">
+                            {availableDetails.stories.length === 0 ? (
+                                <p className="text-center text-gray-500 py-8">Chưa có kinh viện nào.</p>
+                            ) : (
+                                availableDetails.stories.map((story, idx) => {
+                                    const isSelected = selectedLibraryStories.some(s => s.title === story.title && s.content === story.content);
+                                    return (
+                                        <div
+                                            key={idx}
+                                            onClick={() => {
+                                                if (isSelected) {
+                                                    setSelectedLibraryStories(prev => prev.filter(s => !(s.title === story.title && s.content === story.content)));
+                                                } else {
+                                                    setSelectedLibraryStories(prev => [...prev, story]);
+                                                }
+                                            }}
+                                            className={`p-4 border rounded-xl cursor-pointer transition-all group relative ${isSelected ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-primary-500'}`}
+                                        >
+                                            <div className="flex gap-4">
+                                                {story.image && (
+                                                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 relative">
+                                                        <Image src={story.image} alt="" fill className="object-cover" />
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <h4 className="font-bold text-gray-900 group-hover:text-primary-700">{story.title || "Không có tiêu đề"}</h4>
+                                                    <p className="text-sm text-gray-500 line-clamp-2 mt-1">{story.content}</p>
+                                                </div>
+                                            </div>
+                                            {isSelected && (
+                                                <div className="absolute top-2 right-2">
+                                                    <CheckCircle className="w-5 h-5 text-primary-600" fill="currentColor" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                        <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowStoryLibrary(false)}
+                                className="px-6 py-2 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-all text-gray-600"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        stories: [...prev.stories, ...selectedLibraryStories]
+                                    }));
+                                    setShowStoryLibrary(false);
+                                    toast.success(`Đã thêm ${selectedLibraryStories.length} câu chuyện`);
+                                }}
+                                disabled={selectedLibraryStories.length === 0}
+                                className="px-6 py-2 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Thêm {selectedLibraryStories.length > 0 ? `(${selectedLibraryStories.length})` : ''}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Manual Story Editor Modal */}
+            {isStoryEditorOpen && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                            <h3 className="text-lg font-bold text-gray-900">Thêm câu chuyện mới</h3>
+                            <button onClick={() => setIsStoryEditorOpen(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                                <X className="w-5 h-5 text-gray-400" />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-sm font-medium text-gray-700">Tiêu đề</label>
+                                <input
+                                    type="text"
+                                    className="w-full px-4 py-2 border rounded-xl"
+                                    value={tempStory.title}
+                                    onChange={(e) => setTempStory({ ...tempStory, title: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-sm font-medium text-gray-700">Nội dung</label>
+                                <textarea
+                                    rows={4}
+                                    className="w-full px-4 py-2 border rounded-xl resize-none"
+                                    value={tempStory.content}
+                                    onChange={(e) => setTempStory({ ...tempStory, content: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-sm font-medium text-gray-700">Ảnh (URL)</label>
+                                <input
+                                    type="text"
+                                    className="w-full px-4 py-2 border rounded-xl"
+                                    value={tempStory.image}
+                                    onChange={(e) => setTempStory({ ...tempStory, image: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                        <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
+                            <button
+                                onClick={() => setIsStoryEditorOpen(false)}
+                                className="px-4 py-2 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-all text-gray-600"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        stories: [...prev.stories, tempStory]
+                                    }));
+                                    setIsStoryEditorOpen(false);
+                                }}
+                                disabled={!tempStory.title && !tempStory.content}
+                                className="px-4 py-2 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all disabled:opacity-50"
+                            >
+                                Lưu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Image Library Modal */}
+            {showImageLibrary && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+                    <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[80vh]">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-100">
+                            <h3 className="text-xl font-bold text-gray-900">Thư viện hình ảnh ({selectedLibraryImages.length} đang chọn)</h3>
+                            <button onClick={() => setShowImageLibrary(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                                <X className="w-6 h-6 text-gray-400" />
+                            </button>
+                        </div>
+                        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+                            {availableDetails.images.length === 0 ? (
+                                <p className="text-center text-gray-500 py-8">Chưa có hình ảnh nào trong thư viện.</p>
+                            ) : (
+                                <div className="grid grid-cols-4 md:grid-cols-6 gap-4">
+                                    {availableDetails.images.map((img, idx) => {
+                                        const isSelected = selectedLibraryImages.includes(img);
+                                        return (
+                                            <div
+                                                key={idx}
+                                                onClick={() => {
+                                                    if (isSelected) {
+                                                        setSelectedLibraryImages(prev => prev.filter(i => i !== img));
+                                                    } else {
+                                                        setSelectedLibraryImages(prev => [...prev, img]);
+                                                    }
+                                                }}
+                                                className={`aspect-square rounded-lg overflow-hidden border-2 cursor-pointer relative group transition-all ${isSelected ? 'border-primary-500 ring-2 ring-primary-200' : 'border-gray-200 hover:border-primary-300'}`}
+                                            >
+                                                <Image src={img} alt="Lib" fill className="object-cover" />
+                                                {isSelected && (
+                                                    <div className="absolute inset-0 bg-primary-500/20 flex items-center justify-center">
+                                                        <CheckCircle className="w-8 h-8 text-white drop-shadow-md" fill="currentColor" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowImageLibrary(false)}
+                                className="px-6 py-2 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-all text-gray-600"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        images: [...prev.images, ...selectedLibraryImages]
+                                    }));
+                                    setShowImageLibrary(false);
+                                    toast.success(`Đã thêm ${selectedLibraryImages.length} ảnh`);
+                                }}
+                                disabled={selectedLibraryImages.length === 0}
+                                className="px-6 py-2 bg-primary-600 text-white rounded-xl font-bold hover:bg-primary-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Thêm {selectedLibraryImages.length > 0 ? `(${selectedLibraryImages.length})` : ''}
                             </button>
                         </div>
                     </div>

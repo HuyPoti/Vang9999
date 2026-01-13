@@ -20,6 +20,7 @@ interface Product {
     story?: string;
     story_title?: string;
     story_image?: string;
+    stories?: { title: string; content: string; image: string }[];
 }
 
 export default function ProductDetailPage({ params: paramsPromise }: { params: Promise<{ slug: string }> }) {
@@ -118,7 +119,7 @@ export default function ProductDetailPage({ params: paramsPromise }: { params: P
 
                     {/* Product Info */}
                     <div className="w-full md:w-1/2">
-                        <div className="mb-2 text-gold-600 font-bold uppercase tracking-wider text-sm">Bộ Sưu Tập 2025</div>
+                        <div className="mb-2 text-gold-600 font-bold uppercase tracking-wider text-sm">Bộ Sưu Tập 2026</div>
                         <h1 className="font-display font-bold text-4xl text-gray-900 mb-4">{product.name}</h1>
 
                         {/* Stock Status Badges */}
@@ -142,30 +143,46 @@ export default function ProductDetailPage({ params: paramsPromise }: { params: P
                         </div>
 
                         {/* Story CTA - Enhanced UI */}
-                        {(product.story || product.story_title) && (
-                            <div className="mb-8 p-6 bg-gradient-to-br from-primary-50 to-white rounded-2xl border border-primary-100 relative overflow-hidden group">
-                                <div className="absolute right-[-20px] top-[-20px] opacity-10 group-hover:scale-110 transition-transform duration-500">
-                                    <BookOpen className="w-32 h-32 text-primary-600" />
-                                </div>
-                                <div className="relative z-10">
-                                    <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-                                        <span className="p-1.5 bg-primary-100 text-primary-600 rounded-lg">
-                                            <BookOpen className="w-4 h-4" />
-                                        </span>
-                                        {product.story_title || "Giai thoại về sản phẩm"}
-                                    </h4>
-                                    {product.story && (
-                                        <p className="text-sm text-gray-600 mb-4 line-clamp-2 italic">
-                                            "{product.story.substring(0, 120)}..."
-                                        </p>
-                                    )}
-                                    <Link
-                                        href={`/stories/${product.slug}`}
-                                        className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm hover:text-primary-700 transition-colors"
-                                    >
-                                        Khám phá câu chuyện <span className="text-xl">→</span>
-                                    </Link>
-                                </div>
+                        {((product.stories && product.stories.length > 0) || product.story || product.story_title) && (
+                            <div className="space-y-6 mb-10">
+                                {/* Combine legacy story into array if new stories missing */}
+                                {(() => {
+                                    const displayStories = product.stories?.length ? product.stories : (
+                                        (product.story || product.story_title) ? [{
+                                            title: product.story_title || "",
+                                            content: product.story || "",
+                                            image: product.story_image || "",
+                                            slug: product.slug // Pass slug for link construction if needed
+                                        }] : []
+                                    );
+
+                                    return displayStories.map((story, idx) => (
+                                        <div key={idx} className="p-6 bg-gradient-to-br from-primary-50 to-white rounded-2xl border border-primary-100 relative overflow-hidden group">
+                                            <div className="absolute right-[-20px] top-[-20px] opacity-10 group-hover:scale-110 transition-transform duration-500">
+                                                <BookOpen className="w-32 h-32 text-primary-600" />
+                                            </div>
+                                            <div className="relative z-10">
+                                                <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                                    <span className="p-1.5 bg-primary-100 text-primary-600 rounded-lg">
+                                                        <BookOpen className="w-4 h-4" />
+                                                    </span>
+                                                    {story.title || "Giai thoại về sản phẩm"}
+                                                </h4>
+                                                {story.content && (
+                                                    <p className="text-sm text-gray-600 mb-4 line-clamp-3 italic">
+                                                        "{story.content.substring(0, 150)}..."
+                                                    </p>
+                                                )}
+                                                <Link
+                                                    href={`/stories/${product.slug}?idx=${idx}`} // Add index to URL to target specific story
+                                                    className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm hover:text-primary-700 transition-colors"
+                                                >
+                                                    Khám phá câu chuyện <span className="text-xl">→</span>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ));
+                                })()}
                             </div>
                         )}
 

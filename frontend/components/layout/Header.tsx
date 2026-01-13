@@ -27,7 +27,7 @@ export const Header = () => {
                                 priority
                             />
                         </div>
-                        <span className="font-display font-bold text-2xl text-gray-900">Lì Xì 2026</span>
+                        <span className="font-display font-bold text-2xl text-gray-900">Lộc bếp Việt</span>
                     </Link>
 
                     {/* Nav - Desktop */}

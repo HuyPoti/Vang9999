@@ -69,7 +69,7 @@ export default function AboutPage() {
                     {/* Intro Section */}
                     <div className="space-y-8">
                         <div className="text-center">
-                            <h1 className="font-display font-bold text-4xl md:text-5xl text-gray-900 mb-6">Câu Chuyện Lì Xì 2026</h1>
+                            <h1 className="font-display font-bold text-4xl md:text-5xl text-gray-900 mb-6">Câu Chuyện Lộc bếp Việt</h1>
                             <div className="w-20 h-1 bg-gold-500 mx-auto rounded-full" />
                         </div>
 
@@ -78,7 +78,7 @@ export default function AboutPage() {
                                 "Lì xì không chỉ là trao đi một tờ tiền, mà là trao đi lời chúc may mắn, sự trân trọng và niềm hy vọng vào một năm mới khởi sắc."
                             </p>
                             <p>
-                                Dự án Lì Xì 2026 được thành lập với mong muốn gìn giữ nét văn hóa truyền thống của người Việt thông qua những phong bao lì xì được thiết kế hiện đại, tinh tế. Mỗi sản phẩm là tâm huyết của đội ngũ sáng tạo, gửi gắm những giá trị tinh thần tốt đẹp cho ngày Tết Việt Nam.
+                                Dự án Lộc bếp Việt được thành lập với mong muốn gìn giữ nét văn hóa truyền thống của người Việt thông qua những phong bao lì xì được thiết kế hiện đại, tinh tế. Mỗi sản phẩm là tâm huyết của đội ngũ sáng tạo, gửi gắm những giá trị tinh thần tốt đẹp cho ngày Tết Việt Nam.
                             </p>
                         </div>
                     </div>

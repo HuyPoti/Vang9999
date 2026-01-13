@@ -56,12 +56,12 @@ export class MailService {
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 10px; overflow: hidden;">
         <div style="background-color: #d92d20; padding: 20px; text-align: center;">
-          <h1 style="color: white; margin: 0;">Lì Xì 2026</h1>
+          <h1 style="color: white; margin: 0;">Lộc bếp Việt</h1>
         </div>
         <div style="padding: 20px;">
           <h2>Xác nhận đơn hàng #${id.substring(0, 8)}</h2>
           <p>Chào <strong>${customer_name}</strong>,</p>
-          <p>Cảm ơn bạn đã đặt hàng tại <strong>Lì Xì 2026</strong>. Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.</p>
+          <p>Cảm ơn bạn đã đặt hàng tại <strong>Lộc bếp Việt</strong>. Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.</p>
           
           <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">Chi tiết đơn hàng</h3>
           <table style="width: 100%; border-collapse: collapse;">
@@ -96,8 +96,8 @@ export class MailService {
           </div>
         </div>
         <div style="background-color: #f9f9f9; padding: 20px; text-align: center; font-size: 12px; color: #666;">
-          <p>© 2026 Lì Xì 2026. All rights reserved.</p>
-          <p>Hotline: 0909 999 999 | Website: lixi2026.vn</p>
+          <p>© 2026 Lộc bếp Việt. All rights reserved.</p>
+          <p>Hotline: 0961686427 | Website: lixi2026.vn</p>
         </div>
       </div>
     `;
@@ -108,7 +108,7 @@ export class MailService {
         await this.transporter.sendMail({
           from: this.configService.get('SMTP_FROM'),
           to: email,
-          subject: `[Lì Xì 2026] Xác nhận đơn hàng #${id.substring(0, 8)}`,
+          subject: `[Lộc bếp Việt] Xác nhận đơn hàng #${id.substring(0, 8)}`,
           html: htmlContent,
         });
         this.logger.log(`Confirmation email sent to customer: ${email}`);

@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
                                 priority
                             />
                         </div>
-                        <span className="font-display font-bold text-2xl text-gray-900">Lì Xì 2026</span>
+                        <span className="font-display font-bold text-2xl text-gray-900">Lộc bếp Việt</span>
                     </div>
                 </div>
 

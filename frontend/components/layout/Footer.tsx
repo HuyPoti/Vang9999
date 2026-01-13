@@ -10,7 +10,7 @@ export const Footer = () => {
             <Container>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
-                        <h3 className="font-display font-bold text-2xl text-white mb-4">Lì Xì 2026</h3>
+                        <h3 className="font-display font-bold text-2xl text-white mb-4">Lộc bếp Việt</h3>
                         <p className="text-sm leading-relaxed max-w-xs text-gray-400">
                             Mang những phong bao lì xì đẹp nhất, ý nghĩa nhất đến gia đình bạn trong dịp Tết này. Trao gửi yêu thương, kết nối sum vầy.
                         </p>
@@ -25,14 +25,14 @@ export const Footer = () => {
                     <div>
                         <h4 className="text-white font-bold mb-4">Liên hệ</h4>
                         <ul className="space-y-2 text-sm">
-                            <li>Hotline: 0909 999 999</li>
-                            <li>Email: cskh@lixi2025.com</li>
+                            <li>Hotline: 0961686427</li>
+                            <li>Email: maingoc230903@gmail.com</li>
                             <li>Địa chỉ: TP. Hồ Chí Minh, Việt Nam</li>
                         </ul>
                     </div>
                 </div>
                 <div className="border-t border-gray-800 mt-12 pt-8 text-center text-xs text-gray-500">
-                    © 2025 Lì Xì Project. Made with ❤️.
+                    © 2026 Lì Xì Project. Made with ❤️.
                 </div>
             </Container>
         </footer>

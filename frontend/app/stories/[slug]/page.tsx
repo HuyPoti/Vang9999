@@ -5,22 +5,27 @@ import { Container } from "@/components/ui/Container";
 import Link from "next/link";
 import Image from "next/image";
 import { Loader2, ArrowLeft, ShoppingBag } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 interface ProductStory {
     id: string;
     slug: string;
     name: string;
-    story: string;
-    story_title: string;
-    story_image: string;
+    story?: string;
+    story_title?: string;
+    story_image?: string;
+    stories?: { title: string; content: string; image: string }[];
     images: string[];
 }
 
 export default function StoryDetailPage({ params: paramsPromise }: { params: Promise<{ slug: string }> }) {
     const params = use(paramsPromise);
     const { slug } = params;
+    const searchParams = useSearchParams();
+    const storyIndex = searchParams.get('idx') ? parseInt(searchParams.get('idx')!) : 0;
 
     const [product, setProduct] = useState<ProductStory | null>(null);
+    const [currentStory, setCurrentStory] = useState<{ title: string; content: string; image: string } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -31,8 +36,26 @@ export default function StoryDetailPage({ params: paramsPromise }: { params: Pro
                 const res = await fetch(`${apiUrl}/products/${slug}`);
                 if (!res.ok) throw new Error("Sản phẩm không tồn tại");
                 const data = await res.json();
-                if (!data.story) throw new Error("Sản phẩm này chưa có câu chuyện riêng");
+
+                // Determine which story to show
+                let targetStory = null;
+
+                if (data.stories && data.stories.length > 0) {
+                    // Prioritize new stories array
+                    targetStory = data.stories[storyIndex] || data.stories[0];
+                } else if (data.story || data.story_title) {
+                    // Fallback to legacy
+                    targetStory = {
+                        title: data.story_title,
+                        content: data.story,
+                        image: data.story_image
+                    };
+                }
+
+                if (!targetStory) throw new Error("Sản phẩm này chưa có câu chuyện riêng");
+
                 setProduct(data);
+                setCurrentStory(targetStory);
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -51,7 +74,7 @@ export default function StoryDetailPage({ params: paramsPromise }: { params: Pro
         );
     }
 
-    if (error || !product) {
+    if (error || !product || !currentStory) {
         return (
             <div className="py-24 text-center">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">{error || "Không tìm thấy câu chuyện"}</h2>
@@ -74,7 +97,7 @@ export default function StoryDetailPage({ params: paramsPromise }: { params: Pro
                     <div className="text-center mb-12 space-y-4">
                         <h2 className="text-primary-600 font-bold uppercase tracking-wider text-sm">Chuyện về {product.name}</h2>
                         <h1 className="font-display font-bold text-4xl md:text-5xl text-gray-900 leading-tight">
-                            {product.story_title || `Sự tích ${product.name}`}
+                            {currentStory.title || `Sự tích ${product.name}`}
                         </h1>
                         <div className="w-20 h-1 bg-gold-500 mx-auto mt-6 rounded-full" />
                     </div>
@@ -82,7 +105,7 @@ export default function StoryDetailPage({ params: paramsPromise }: { params: Pro
                     {/* Centered Image - Matching Product Detail Aspect Ratio */}
                     <div className="relative aspect-[3/4] w-full md:w-3/4 mx-auto bg-gray-100 rounded-3xl overflow-hidden border border-gray-100 shadow-2xl mb-12">
                         <Image
-                            src={product.story_image || product.images?.[0] || 'https://placehold.co/800x1200/red/gold.png?text=Story'}
+                            src={currentStory.image || product.images?.[0] || 'https://placehold.co/800x1200/red/gold.png?text=Story'}
                             alt={product.name}
                             fill
                             className="object-cover"
@@ -94,7 +117,7 @@ export default function StoryDetailPage({ params: paramsPromise }: { params: Pro
                     {/* Content Section */}
                     <div className="space-y-12">
                         <div className="prose prose-lg prose-stone max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap text-justify">
-                            {product.story}
+                            {currentStory.content}
                         </div>
 
                         <div className="pt-8 border-t border-gray-100">

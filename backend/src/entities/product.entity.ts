@@ -48,6 +48,9 @@ export class Product {
     @Column('text', { nullable: true })
     story_image: string;
 
+    @Column('jsonb', { default: [] })
+    stories: { title: string; content: string; image: string }[];
+
     @OneToMany(() => Comment, (comment) => comment.product)
     comments: Comment[];
 

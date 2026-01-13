@@ -1,6 +1,6 @@
 # 🚀 Hướng Dẫn Triển Khai (Deployment Guide)
 
-Tài liệu này cung cấp các bước cần thiết để thiết lập và chạy dự án **Lì Xì 2026** trên môi trường Production (như Vercel và Render).
+Tài liệu này cung cấp các bước cần thiết để thiết lập và chạy dự án **Lộc bếp Việt** trên môi trường Production (như Vercel và Render).
 
 ## 1. Biến môi trường (Environment Variables)
 
@@ -126,4 +126,4 @@ Nếu bạn chạy Docker local và gặp lỗi `ENETUNREACH` kèm một địa 
 2. Nếu vẫn lỗi, hãy kiểm tra xem bạn có đang dùng Hostname của Supabase (ví dụ: `db.xxxx.supabase.co`) không. Một số khu vực của Supabase hiện đã chuyển sang IPv6-only. Bạn có thể sử dụng **Connection Pooling** (cổng 6543) hoặc IPv4 address nếu Supabase có cung cấp.
 
 ---
-🚀 *Chúc bạn kinh doanh hồng phát trong mùa Lì Xì 2026!*
+🚀 *Chúc bạn kinh doanh hồng phát trong mùa Lộc bếp Việt!*
