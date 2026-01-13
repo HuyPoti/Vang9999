@@ -191,7 +191,7 @@ export default function ProductDetailPage({ params: paramsPromise }: { params: P
                         </div>
 
                         <div className="flex gap-4 text-sm text-gray-500">
-                            <span>Đặt trên 50 cái sẽ giao hàng tận nơi. Đặt dưới 50 cái sẽ giao hàng tại Trường Đại học Sư phạm TP. Hồ Chí Minh.</span>
+                            <span>Giao hàng trực tiếp tại Trường Đại học Sư phạm TP. Hồ Chí Minh. Nếu muốn giao hàng chỗ khác, vui lòng liên hệ zalo hoặc gmail</span>
                         </div>
                     </div>
                 </div>
