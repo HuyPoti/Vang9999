@@ -1,7 +1,8 @@
 "use client";
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShoppingBag, Menu } from 'lucide-react';
+import { ShoppingBag, Menu, X } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { useCart } from '@/components/providers/CartProvider';
 import Image from 'next/image';
@@ -9,6 +10,7 @@ import Image from 'next/image';
 export const Header = () => {
     const { totalItems } = useCart();
     const pathname = usePathname();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     if (pathname.startsWith('/admin')) return null;
 
@@ -48,11 +50,43 @@ export const Header = () => {
                             )}
                         </Link>
 
-                        <button className="md:hidden p-2 hover:bg-gray-100 rounded-full">
-                            <Menu className="w-6 h-6 text-gray-700" />
+                        <button
+                            className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        >
+                            {isMobileMenuOpen ? (
+                                <X className="w-6 h-6 text-gray-700" />
+                            ) : (
+                                <Menu className="w-6 h-6 text-gray-700" />
+                            )}
                         </button>
                     </div>
                 </div>
+
+                {/* Mobile Navigation Menu */}
+                {isMobileMenuOpen && (
+                    <div className="md:hidden absolute top-20 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xl animate-in slide-in-from-top-5">
+                        <nav className="flex flex-col p-4 gap-2">
+                            {[
+                                { href: '/products', label: 'Sản phẩm' },
+                                { href: '/about', label: 'Về chúng tôi' },
+                                { href: '/contact', label: 'Liên hệ' },
+                            ].map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`p-4 rounded-xl font-medium transition-all ${pathname === link.href
+                                            ? 'bg-primary-50 text-primary-600'
+                                            : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600'
+                                        }`}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </nav>
+                    </div>
+                )}
             </Container>
         </header>
     );
