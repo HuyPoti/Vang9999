@@ -3,17 +3,18 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/ui/Container";
-import { LayoutDashboard, ShoppingBag, ListOrdered, LogOut, User, MessageSquare } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, ListOrdered, LogOut, User, MessageSquare, BarChart3 } from "lucide-react";
 import { ProductManager } from "@/components/admin/ProductManager";
 import { OrderManager } from "@/components/admin/OrderManager";
 import { CommentManager } from "@/components/admin/CommentManager";
+import { StatisticsManager } from "@/components/admin/StatisticsManager";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
-type Tab = "products" | "orders" | "comments";
+type Tab = "statistics" | "products" | "orders" | "comments";
 
 export default function AdminDashboardPage() {
-    const [activeTab, setActiveTab] = useState<Tab>("products");
+    const [activeTab, setActiveTab] = useState<Tab>("statistics");
     const [isAdmin, setIsAdmin] = useState(false);
     const router = useRouter();
 
@@ -53,6 +54,15 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <nav className="flex-grow p-4 space-y-2">
+                    <button
+                        onClick={() => setActiveTab("statistics")}
+                        className={cn(
+                            "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium",
+                            activeTab === "statistics" ? "bg-primary-50 text-primary-600" : "text-gray-500 hover:bg-gray-50"
+                        )}
+                    >
+                        <BarChart3 className="w-5 h-5" /> Thống kê
+                    </button>
                     <button
                         onClick={() => setActiveTab("products")}
                         className={cn(
@@ -112,6 +122,7 @@ export default function AdminDashboardPage() {
 
                 <div className="p-8">
                     <Container>
+                        {activeTab === "statistics" && <StatisticsManager />}
                         {activeTab === "products" && <ProductManager />}
                         {activeTab === "orders" && <OrderManager />}
                         {activeTab === "comments" && <CommentManager />}

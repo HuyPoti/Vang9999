@@ -177,4 +177,170 @@ export class OrderService {
         order.status = status;
         return this.orderRepository.save(order);
     }
+
+    /**
+     * Lấy thống kê tổng quan về đơn hàng
+     */
+    async getStatistics(dateRange?: { startDate?: string; endDate?: string }) {
+        const queryBuilder = this.orderRepository.createQueryBuilder('order')
+            .leftJoinAndSelect('order.items', 'items');
+
+        // Filter theo thời gian nếu có
+        if (dateRange?.startDate) {
+            queryBuilder.andWhere('order.created_at >= :startDate', {
+                startDate: new Date(dateRange.startDate)
+            });
+        }
+        if (dateRange?.endDate) {
+            queryBuilder.andWhere('order.created_at <= :endDate', {
+                endDate: new Date(dateRange.endDate)
+            });
+        }
+
+        const orders = await queryBuilder.getMany();
+
+        // Tính tổng số đơn hàng và doanh thu
+        const totalOrders = orders.length;
+        const totalRevenue = orders.reduce((sum, order) => sum + Number(order.total_amount), 0);
+
+        // Thống kê theo trạng thái
+        const statusBreakdown = {
+            pending: orders.filter(o => o.status === OrderStatus.PENDING).length,
+            confirmed: orders.filter(o => o.status === OrderStatus.CONFIRMED).length,
+            shipping: orders.filter(o => o.status === OrderStatus.SHIPPING).length,
+            completed: orders.filter(o => o.status === OrderStatus.COMPLETED).length,
+            cancelled: orders.filter(o => o.status === OrderStatus.CANCELLED).length,
+        };
+
+        // Thống kê doanh thu theo ngày
+        const dailyRevenue = this.calculateDailyRevenue(orders);
+
+        return {
+            total_orders: totalOrders,
+            total_revenue: totalRevenue,
+            status_breakdown: statusBreakdown,
+            daily_revenue: dailyRevenue,
+        };
+    }
+
+    /**
+     * Tính doanh thu theo ngày
+     */
+    private calculateDailyRevenue(orders: Order[]) {
+        const revenueMap = new Map<string, number>();
+
+        orders.forEach(order => {
+            const date = order.created_at.toISOString().split('T')[0]; // YYYY-MM-DD
+            const currentRevenue = revenueMap.get(date) || 0;
+            revenueMap.set(date, currentRevenue + Number(order.total_amount));
+        });
+
+        // Convert to array và sort theo ngày
+        return Array.from(revenueMap.entries())
+            .map(([date, revenue]) => ({ date, revenue }))
+            .sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    /**
+     * Lấy thống kê theo sản phẩm
+     */
+    async getProductStatistics(dateRange?: { startDate?: string; endDate?: string }) {
+        const queryBuilder = this.dataSource
+            .getRepository(OrderItem)
+            .createQueryBuilder('item')
+            .innerJoin('item.order', 'order')
+            .select('item.product_id', 'product_id')
+            .addSelect('item.product_name', 'product_name')
+            .addSelect('SUM(item.quantity)', 'total_quantity')
+            .addSelect('SUM(item.price * item.quantity)', 'total_revenue')
+            .addSelect('COUNT(DISTINCT item.order_id)', 'order_count');
+
+        // Filter theo thời gian nếu có
+        if (dateRange?.startDate) {
+            queryBuilder.andWhere('order.created_at >= :startDate', {
+                startDate: new Date(dateRange.startDate)
+            });
+        }
+        if (dateRange?.endDate) {
+            queryBuilder.andWhere('order.created_at <= :endDate', {
+                endDate: new Date(dateRange.endDate)
+            });
+        }
+
+        const result = await queryBuilder
+            .groupBy('item.product_id')
+            .addGroupBy('item.product_name')
+            .orderBy('total_revenue', 'DESC')
+            .getRawMany();
+
+        return result.map(item => ({
+            product_id: item.product_id,
+            product_name: item.product_name,
+            total_quantity: parseInt(item.total_quantity),
+            total_revenue: parseFloat(item.total_revenue),
+            order_count: parseInt(item.order_count),
+        }));
+    }
+
+    /**
+     * Export thống kê ra file Excel
+     */
+    async exportStatistics(res: any, dateRange?: { startDate?: string; endDate?: string }) {
+        const orderStats = await this.getStatistics(dateRange);
+        const productStats = await this.getProductStatistics(dateRange);
+
+        const ExcelJS = require('exceljs');
+        const workbook = new ExcelJS.Workbook();
+
+        // Sheet 1: Tổng quan
+        const overviewSheet = workbook.addWorksheet('Tổng quan');
+        overviewSheet.columns = [
+            { header: 'Chỉ số', key: 'metric', width: 30 },
+            { header: 'Giá trị', key: 'value', width: 20 },
+        ];
+
+        overviewSheet.addRow({ metric: 'Tổng số đơn hàng', value: orderStats.total_orders });
+        overviewSheet.addRow({ metric: 'Tổng doanh thu', value: orderStats.total_revenue });
+        overviewSheet.addRow({ metric: '' });
+        overviewSheet.addRow({ metric: 'Đơn hàng theo trạng thái', value: '' });
+        overviewSheet.addRow({ metric: '  - Chờ xác nhận', value: orderStats.status_breakdown.pending });
+        overviewSheet.addRow({ metric: '  - Đã xác nhận', value: orderStats.status_breakdown.confirmed });
+        overviewSheet.addRow({ metric: '  - Đang giao', value: orderStats.status_breakdown.shipping });
+        overviewSheet.addRow({ metric: '  - Hoàn thành', value: orderStats.status_breakdown.completed });
+        overviewSheet.addRow({ metric: '  - Đã hủy', value: orderStats.status_breakdown.cancelled });
+
+        // Sheet 2: Doanh thu theo ngày
+        const dailySheet = workbook.addWorksheet('Doanh thu theo ngày');
+        dailySheet.columns = [
+            { header: 'Ngày', key: 'date', width: 15 },
+            { header: 'Doanh thu', key: 'revenue', width: 20 },
+        ];
+        orderStats.daily_revenue.forEach(item => {
+            dailySheet.addRow(item);
+        });
+
+        // Sheet 3: Thống kê sản phẩm
+        const productSheet = workbook.addWorksheet('Sản phẩm');
+        productSheet.columns = [
+            { header: 'Tên sản phẩm', key: 'product_name', width: 30 },
+            { header: 'Số lượng bán', key: 'total_quantity', width: 15 },
+            { header: 'Số đơn hàng', key: 'order_count', width: 15 },
+            { header: 'Doanh thu', key: 'total_revenue', width: 20 },
+        ];
+        productStats.forEach(product => {
+            productSheet.addRow(product);
+        });
+
+        // Set headers
+        res.setHeader(
+            'Content-Type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+        res.setHeader(
+            'Content-Disposition',
+            'attachment; filename=statistics.xlsx',
+        );
+
+        return workbook.xlsx.write(res);
+    }
 }

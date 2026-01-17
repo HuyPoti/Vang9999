@@ -39,4 +39,25 @@ export class OrderController {
     ) {
         return this.orderService.updateStatus(id, status);
     }
+
+    @Get('statistics/overview')
+    @UseGuards(JwtAuthGuard)
+    async getStatistics(@Query() query: { startDate?: string; endDate?: string }) {
+        const orderStats = await this.orderService.getStatistics(query);
+        const productStats = await this.orderService.getProductStatistics(query);
+
+        return {
+            status: 'success',
+            data: {
+                order_statistics: orderStats,
+                product_statistics: productStats,
+            },
+        };
+    }
+
+    @Get('statistics/export')
+    @UseGuards(JwtAuthGuard)
+    async exportStatistics(@Res() res: any, @Query() query: { startDate?: string; endDate?: string }) {
+        return this.orderService.exportStatistics(res, query);
+    }
 }
