@@ -212,8 +212,10 @@ export class OrderService {
             cancelled: orders.filter(o => o.status === OrderStatus.CANCELLED).length,
         };
 
-        // Thống kê doanh thu theo ngày
-        const dailyRevenue = this.calculateDailyRevenue(orders);
+        // Thống kê doanh thu theo ngày (chỉ tính các đơn đã Hoàn thành)
+        const dailyRevenue = this.calculateDailyRevenue(
+            orders.filter(o => o.status === OrderStatus.COMPLETED)
+        );
 
         return {
             total_orders: totalOrders,
