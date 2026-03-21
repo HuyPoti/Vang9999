@@ -3,18 +3,24 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatCurrency } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { Product } from "@/src/types/product";
 
-async function fetchProducts() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-  const res = await fetch(`${apiUrl}/products`, {
-    next: { revalidate: 86400 },
-  });
-  if (!res.ok) return [];
-  return res.json();
+async function fetchProducts(): Promise<Product[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const res = await fetch(`${apiUrl}/products`, {
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch (error) {
+    console.error("Fetch products failed:", error);
+    return [];
+  }
 }
 
 export default async function ProductsPage() {
-  const products: any[] = await fetchProducts();
+  const products = await fetchProducts();
 
   if (!products || products.length === 0) {
     return (
@@ -52,7 +58,7 @@ export default async function ProductsPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {products.map((product: any) => (
+          {products.map((product) => (
             <Link
               key={product.id}
               href={`/products/${product.slug}`}

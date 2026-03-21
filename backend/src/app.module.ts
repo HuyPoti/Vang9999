@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -21,13 +22,14 @@ import { MailModule } from './modules/mail/mail.module';
         type: 'postgres',
         url: configService.get('DATABASE_URL'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
         ssl: true,
         extra: {
           ssl: {
             rejectUnauthorized: false,
           },
         },
+        migrations: [join(__dirname, '/migrations/*{.ts,.js}')],
       }),
       inject: [ConfigService],
     }),

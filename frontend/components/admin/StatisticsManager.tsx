@@ -8,6 +8,7 @@ import {
   ProductStatistics,
   DateRange,
 } from "@/lib/statistics.service";
+import { formatCurrency } from "@/lib/utils";
 import {
   BarChart3,
   Package,
@@ -93,12 +94,6 @@ export function StatisticsManager() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
 
   if (loading) {
     return (

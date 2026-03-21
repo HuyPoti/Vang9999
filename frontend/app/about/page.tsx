@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { ArrowRight, BookOpen } from "lucide-react";
+import { Product } from "@/src/types/product";
 
 interface Member {
     id: number;
@@ -45,14 +46,14 @@ export default function AboutPage() {
                 const res = await fetch(`${apiUrl}/products`);
                 const data = await res.json();
                 // We filter products that have a story defined
-                const productsWithStories = data
-                    .filter((p: any) => p.story)
-                    .map((p: any) => ({
+                const productsWithStories = (data as Product[])
+                    .filter((p): p is Product & { story: string } => !!p.story)
+                    .map((p) => ({
                         id: p.id,
                         name: p.name,
                         slug: p.slug,
                         image: p.story_image || p.images?.[0] || 'https://placehold.co/400x600/red/gold.png?text=Story',
-                        story_summary: p.story.substring(0, 100) + "..."
+                        story_summary: (p.story || "").substring(0, 100) + "..."
                     }));
                 setStories(productsWithStories);
             } catch (err) {

@@ -1,0 +1,14 @@
+{
+    "common": {
+        "welcome": "Chào mừng đến với Lộc bếp Việt",
+        "search": "Tìm kiếm sản phẩm...",
+        "cart": "Giỏ hàng",
+        "login": "Đăng nhập"
+    },
+    "products": {
+        "title": "Bộ Sưu Tập 2026",
+        "description": "Bao lì xì thiết kế riêng cho năm Ất Tỵ",
+        "in_stock": "Còn hàng",
+        "out_of_stock": "Hết hàng"
+    }
+}

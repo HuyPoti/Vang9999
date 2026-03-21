@@ -3,20 +3,26 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { formatCurrency } from "@/lib/utils";
 import { Loader2, ArrowRight } from "lucide-react";
+import { Product } from "@/src/types/product";
 
 // Server component with ISR (1 day)
-async function fetchProducts() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-  const res = await fetch(`${apiUrl}/products`, {
-    next: { revalidate: 86400 },
-  });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.slice(0, 4);
+async function fetchProducts(): Promise<Product[]> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const res = await fetch(`${apiUrl}/products`, {
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.slice(0, 4);
+  } catch (error) {
+    console.error("Fetch products failed:", error);
+    return [];
+  }
 }
 
 export default async function Home() {
-  const products: any[] = await fetchProducts();
+  const products = await fetchProducts();
 
   return (
     <div className="space-y-20 pb-20">

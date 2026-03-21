@@ -2,32 +2,57 @@ import { Container } from "@/components/ui/Container";
 import Link from "next/link";
 import Image from "next/image";
 import { formatCurrency, cn } from "@/lib/utils";
-import { AddToCartButton } from "./AddToCartButton";
-import { CommentSection } from "@/components/product/CommentSection";
 import { Loader2, ArrowLeft, BookOpen } from "lucide-react";
 import ImageGallery from "./ImageGallery";
+import { AddToCartButton } from "./AddToCartButton";
+import { CommentSection } from "@/components/product/CommentSection";
+import { Product } from "@/src/types/product";
+import { Metadata } from "next";
 
-interface Product {
-  id: string;
-  slug: string;
-  name: string;
-  price: number;
-  description: string;
-  images: string[];
-  stock_status?: "in_stock" | "out_of_stock" | "discontinued";
-  story?: string;
-  story_title?: string;
-  story_image?: string;
-  stories?: { title: string; content: string; image: string }[];
+async function fetchProduct(slug: string): Promise<Product | null> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const res = await fetch(`${apiUrl}/products/${slug}`, {
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch (error) {
+    console.error("Fetch product failed:", error);
+    return null;
+  }
 }
 
-async function fetchProduct(slug: string) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-  const res = await fetch(`${apiUrl}/products/${slug}`, {
-    next: { revalidate: 86400 },
-  });
-  if (!res.ok) return null;
-  return res.json();
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await fetchProduct(slug);
+
+  if (!product) {
+    return {
+      title: "Không tìm thấy sản phẩm | Lộc bếp Việt",
+    };
+  }
+
+  return {
+    title: `${product.name} | Lộc bếp Việt`,
+    description: product.description?.substring(0, 160) || `Khám phá mẫu lì xì ${product.name} độc quyền 2026.`,
+    openGraph: {
+      title: `${product.name} - Lì Xì 2026`,
+      description: product.description,
+      images: [
+        {
+          url: product.images?.[0] || "/tet2026new.png",
+          width: 800,
+          height: 600,
+          alt: product.name,
+        },
+      ],
+    },
+  };
 }
 
 export default async function ProductDetailPage({
@@ -101,12 +126,12 @@ export default async function ProductDetailPage({
             {((product.stories && product.stories.length > 0) ||
               product.story ||
               product.story_title) && (
-              <div className="space-y-6 mb-10">
-                {(() => {
-                  const displayStories = product.stories?.length
-                    ? product.stories
-                    : product.story || product.story_title
-                      ? [
+                <div className="space-y-6 mb-10">
+                  {(() => {
+                    const displayStories = product.stories?.length
+                      ? product.stories
+                      : product.story || product.story_title
+                        ? [
                           {
                             title: product.story_title || "",
                             content: product.story || "",
@@ -114,40 +139,40 @@ export default async function ProductDetailPage({
                             slug: product.slug,
                           },
                         ]
-                      : [];
+                        : [];
 
-                  return displayStories.map((story, idx) => (
-                    <div
-                      key={idx}
-                      className="p-6 bg-gradient-to-br from-primary-50 to-white rounded-2xl border border-primary-100 relative overflow-hidden group"
-                    >
-                      <div className="absolute right-[-20px] top-[-20px] opacity-10 group-hover:scale-110 transition-transform duration-500">
-                        <BookOpen className="w-32 h-32 text-primary-600" />
+                    return displayStories.map((story, idx) => (
+                      <div
+                        key={idx}
+                        className="p-6 bg-gradient-to-br from-primary-50 to-white rounded-2xl border border-primary-100 relative overflow-hidden group"
+                      >
+                        <div className="absolute right-[-20px] top-[-20px] opacity-10 group-hover:scale-110 transition-transform duration-500">
+                          <BookOpen className="w-32 h-32 text-primary-600" />
+                        </div>
+                        <div className="relative z-10">
+                          <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                            <span className="p-1.5 bg-primary-100 text-primary-600 rounded-lg">
+                              <BookOpen className="w-4 h-4" />
+                            </span>
+                            {story.title || "Giai thoại về sản phẩm"}
+                          </h4>
+                          {story.content && (
+                            <p className="text-sm text-gray-600 mb-4 line-clamp-3 italic">
+                              "{story.content.substring(0, 150)}..."
+                            </p>
+                          )}
+                          <Link
+                            href={`/stories/${product.slug}?idx=${idx}`}
+                            className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm hover:text-primary-700 transition-colors"
+                          >
+                            Khám phá câu chuyện <span className="text-xl">→</span>
+                          </Link>
+                        </div>
                       </div>
-                      <div className="relative z-10">
-                        <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-                          <span className="p-1.5 bg-primary-100 text-primary-600 rounded-lg">
-                            <BookOpen className="w-4 h-4" />
-                          </span>
-                          {story.title || "Giai thoại về sản phẩm"}
-                        </h4>
-                        {story.content && (
-                          <p className="text-sm text-gray-600 mb-4 line-clamp-3 italic">
-                            "{story.content.substring(0, 150)}..."
-                          </p>
-                        )}
-                        <Link
-                          href={`/stories/${product.slug}?idx=${idx}`}
-                          className="inline-flex items-center gap-2 text-primary-600 font-bold text-sm hover:text-primary-700 transition-colors"
-                        >
-                          Khám phá câu chuyện <span className="text-xl">→</span>
-                        </Link>
-                      </div>
-                    </div>
-                  ));
-                })()}
-              </div>
-            )}
+                    ));
+                  })()}
+                </div>
+              )}
 
             <div className="border-t border-gray-100 pt-8 mb-8">
               <AddToCartButton

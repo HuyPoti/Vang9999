@@ -1,0 +1,14 @@
+{
+    "common": {
+        "welcome": "Welcome to Loc Bep Viet",
+        "search": "Search products...",
+        "cart": "Cart",
+        "login": "Login"
+    },
+    "products": {
+        "title": "2026 Collection",
+        "description": "Custom lucky money envelopes for the Year of the Snake",
+        "in_stock": "In Stock",
+        "out_of_stock": "Out of Stock"
+    }
+}
